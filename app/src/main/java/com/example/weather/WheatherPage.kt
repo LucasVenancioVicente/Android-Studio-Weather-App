@@ -14,14 +14,42 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
+import com.example.weather.data.WeatherData
+import com.example.weather.location.LocationProvider
+import com.example.weather.location.reverseGeocode
 
 @Composable
-fun WeatherPage(city: String, country: String) {
-
+fun WeatherPage(
+    locationProvider: LocationProvider
+) {
+    var city by remember { mutableStateOf("Obtendo localização...") }
+    var country by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(true) }
     var showDetails by remember { mutableStateOf(false) }
 
-    if (showDetails) {
-
+    LaunchedEffect(Unit) {
+        if (locationProvider.hasLocationPermission()) {
+            val coordinates = locationProvider.getLastLocation()
+            coordinates?.let { (latitude, longitude) ->
+                val result = (reverseGeocode(latitude, longitude))
+                city = result.first
+                country = result.second
+            } ?: run {
+                city = "Erro ao obter localização"
+                country = ""
+            }
+        } else {
+            locationProvider.requestLocationPermission()
+        }
+        isLoading = false
+    }
+    if (isLoading) {
+        Text(
+            text = "Carregando localização...",
+            modifier = Modifier.fillMaxSize(),
+            textAlign = TextAlign.Center
+        )
+    } else if (showDetails) {
         WeatherDetails(
             data = WeatherData(
                 city = city,
@@ -36,7 +64,6 @@ fun WeatherPage(city: String, country: String) {
             )
         )
     } else {
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
