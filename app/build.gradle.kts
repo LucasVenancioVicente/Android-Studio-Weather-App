@@ -70,8 +70,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
     implementation ("com.google.android.gms:play-services-location:21.0.1") // localização
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // coroutines
-    implementation ("androidx.activity:activity-compose:1.8.2")
+    implementation ("androidx.activity:activity-compose:1.8.2") // compose
+
+    implementation ("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5") // mqtt
+    implementation ("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") // mqtt
+    implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
 }

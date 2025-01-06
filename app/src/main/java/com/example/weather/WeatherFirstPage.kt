@@ -14,24 +14,27 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
-import com.example.weather.data.WeatherData
 import com.example.weather.location.LocationProvider
 import com.example.weather.location.reverseGeocode
+import com.example.weather.mqttmanager.SensorData
 
 @Composable
 fun WeatherPage(
-    locationProvider: LocationProvider
+    locationProvider: LocationProvider,
+    viewModel: WheatherViewModel
 ) {
     var city by remember { mutableStateOf("Obtendo localização...") }
     var country by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
     var showDetails by remember { mutableStateOf(false) }
 
+    val sensorData by viewModel.sensorData.collectAsState(initial = SensorData())
+
     LaunchedEffect(Unit) {
         if (locationProvider.hasLocationPermission()) {
             val coordinates = locationProvider.getLastLocation()
             coordinates?.let { (latitude, longitude) ->
-                val result = (reverseGeocode(latitude, longitude))
+                val result = reverseGeocode(latitude, longitude)
                 city = result.first
                 country = result.second
             } ?: run {
@@ -43,6 +46,11 @@ fun WeatherPage(
         }
         isLoading = false
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.connectAndSubscribe("sensor/topic")
+    }
+
     if (isLoading) {
         Text(
             text = "Carregando localização...",
@@ -51,17 +59,9 @@ fun WeatherPage(
         )
     } else if (showDetails) {
         WeatherDetails(
-            data = WeatherData(
-                city = city,
-                country = country,
-                temp = 32.0,
-                condition = "Ensolarado",
-                humidity = 1000.0,
-                luminosity = 2000.0,
-                pressure = 40.9,
-                altitude = 50.8,
-                termicSen = 35.0
-            )
+            city = city,
+            country = country,
+            data = sensorData
         )
     } else {
         Column(
@@ -89,7 +89,7 @@ fun WeatherPage(
 }
 
 @Composable
-fun WeatherDetails(data: WeatherData) {
+fun WeatherDetails(city: String, country: String, data: SensorData) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,12 +111,12 @@ fun WeatherDetails(data: WeatherData) {
 
             Column {
                 Text(
-                    text = data.city,
+                    text = city,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = data.country,
+                    text = country,
                     fontSize = 20.sp,
                     color = Color.Gray
                 )
@@ -182,10 +182,10 @@ fun WeatherKeyVal(key: String, value: String) {
 
 fun determineImageUrl(humidity: Double, luminosity: Double): String {
     return when {
-        humidity > 80.0 && luminosity < 300.0 -> "https://example.com/high_humidity_low_light.png"
-        humidity > 80.0 && luminosity >= 300.0 -> "https://example.com/high_humidity_high_light.png"
-        humidity <= 80.0 && luminosity < 300.0 -> "https://example.com/low_humidity_low_light.png"
-        else -> "https://example.com/low_humidity_high_light.png"
+        humidity > 80.0 && luminosity < 300.0 -> "https://example.com/high_humidity_low_light.png" // Ensolarado
+        humidity > 80.0 && luminosity >= 300.0 -> "https://example.com/high_humidity_high_light.png" // Sol com nuvens
+        humidity <= 80.0 && luminosity < 300.0 -> "https://example.com/low_humidity_low_light.png" // Nublado
+        humidity <= 80.0 && luminosity < 300.0 -> "https://example.com/low_humidity_low_light.png" // Chuvoso
+        else -> "https://example.com/low_humidity_high_light.png" // Noite sem nuvens
     }
 }
-
