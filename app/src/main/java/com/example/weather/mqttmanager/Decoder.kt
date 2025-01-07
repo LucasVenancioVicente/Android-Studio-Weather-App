@@ -24,11 +24,11 @@ class Decoder {
 }
 
 data class SensorData(
-    val temp: Double = 0.0,
-    val condition: String = "erro",
-    val humidity: Double = 0.0,
-    val luminosity: Double = 0.0,
-    val pressure: Double = 0.0,
-    val altitude: Double = 0.0,
-    val termicSen: Double = 0.0
+    val temp: Double = 32.0,
+    val condition: String = "Ensolarado",
+    val humidity: Double = 55.0,
+    val luminosity: Double = 700.0,
+    val pressure: Double = 852.0,
+    val altitude: Double = 544.0,
+    val termicSen: Double = 33.0
 )

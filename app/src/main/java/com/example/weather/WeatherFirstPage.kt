@@ -1,5 +1,6 @@
 package com.example.weather
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -8,12 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import coil.compose.AsyncImage
 import com.example.weather.location.LocationProvider
 import com.example.weather.location.reverseGeocode
 import com.example.weather.mqttmanager.SensorData
@@ -129,12 +131,7 @@ fun WeatherDetails(city: String, country: String, data: SensorData) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
-
-        AsyncImage(
-            model = determineImageUrl(data.humidity, data.luminosity),
-            contentDescription = "Weather Icon",
-            modifier = Modifier.size(160.dp)
-        )
+        WeatherImage(data.humidity, data.luminosity)
         Text(
             text = data.condition,
             fontSize = 20.sp,
@@ -180,12 +177,25 @@ fun WeatherKeyVal(key: String, value: String) {
     }
 }
 
-fun determineImageUrl(humidity: Double, luminosity: Double): String {
+@Composable
+fun WeatherImage(humidity: Double, luminosity: Double) {
+    val imageResource = determineImageResource(humidity, luminosity)
+
+    Image(
+        painter = painterResource(id = imageResource),
+        contentDescription = "Weather Image",
+        modifier = Modifier
+            .size(160.dp)
+            .scale(2.5f)
+    )
+}
+
+fun determineImageResource(humidity: Double, luminosity: Double): Int {
     return when {
-        humidity > 80.0 && luminosity < 300.0 -> "https://example.com/high_humidity_low_light.png" // Ensolarado
-        humidity > 80.0 && luminosity >= 300.0 -> "https://example.com/high_humidity_high_light.png" // Sol com nuvens
-        humidity <= 80.0 && luminosity < 300.0 -> "https://example.com/low_humidity_low_light.png" // Nublado
-        humidity <= 80.0 && luminosity < 300.0 -> "https://example.com/low_humidity_low_light.png" // Chuvoso
-        else -> "https://example.com/low_humidity_high_light.png" // Noite sem nuvens
+        humidity >= 30.0 && luminosity >= 500.0 -> R.drawable.ensolarado // Ensolarado
+        humidity > 80.0 && luminosity >= 300.0 -> R.drawable.sol_com_nuvens // Sol com nuvens
+        humidity <= 80.0 && luminosity < 300.0 -> R.drawable.nublado // Nublado
+        humidity > 80.0 && luminosity <= 300.0 -> R.drawable.chuvoso // Chuvoso
+        else -> R.drawable.noite // Noite sem nuvens
     }
 }
