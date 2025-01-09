@@ -16,7 +16,7 @@ class MQTTManager(
         try {
             mqttClient = MqttClient.builder()
                 .useMqttVersion3() // Usar MQTT v3.1.1
-                .serverHost("10.0.0.146") // Endereço do broker
+                .serverHost("10.42.0.118") // Endereço do broker
                 .serverPort(1883) // Porta do broker
                 .buildAsync() // Cliente assíncrono
 

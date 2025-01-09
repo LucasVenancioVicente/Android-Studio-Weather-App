@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
@@ -41,6 +43,7 @@ data class SensorCard(
 @Composable
 fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
     val gradientColor = getGradient(BlueStart, BlueEnd)
+
 
     Column(
         modifier = Modifier
@@ -123,12 +126,13 @@ fun WeatherPage(
         }
         isLoading = false
     }
-
+    val scrollState = rememberScrollState()
     // Layout principal
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .verticalScroll(scrollState)
             .clip(RoundedCornerShape(16.dp))
     ) {
         // Header com Localização
@@ -178,6 +182,7 @@ fun WeatherDetails(data: SensorCard) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
+            .padding(vertical = 8.dp)
             .padding(vertical = 8.dp)
             .background(gradientColor)
             .padding(16.dp)
@@ -318,7 +323,7 @@ fun CardItem(card: SensorCard) {
             .clip(RoundedCornerShape(16.dp))
             .background(getGradient(BlueStart, BlueEnd))
             .fillMaxWidth()
-            .height(200.dp)
+            .height(250.dp)
     ) {
         Column(
             modifier = Modifier

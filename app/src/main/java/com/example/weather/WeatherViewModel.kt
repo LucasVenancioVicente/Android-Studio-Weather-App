@@ -76,13 +76,13 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cardsList = mutableListOf<SensorCard>()
                 for (data in snapshot.children) {
-                    val date = data.child("date").getValue(String::class.java) ?: ""
-                    val temperature = data.child("temperature").getValue(Double::class.java) ?: 0.0
-                    val humidity = data.child("humidity").getValue(Double::class.java) ?: 0.0
-                    val luminosity = data.child("luminosity").getValue(Double::class.java) ?: 0.0
-                    val pressure = data.child("pressure").getValue(Double::class.java) ?: 0.0
+                    val date = data.child("data_hora").getValue(String::class.java) ?: ""
+                    val temperature = data.child("temperatura").getValue(Double::class.java) ?: 0.0
+                    val humidity = data.child("umidade").getValue(Double::class.java) ?: 0.0
+                    val luminosity = data.child("luminosidade").getValue(Double::class.java) ?: 0.0
+                    val pressure = data.child("pressao").getValue(Double::class.java) ?: 0.0
                     val altitude = data.child("altitude").getValue(Double::class.java) ?: 0.0
-                    val termicSen = data.child("termicSen").getValue(Double::class.java) ?: 0.0
+                    val termicSen = data.child("sensacao_termica").getValue(Double::class.java) ?: 0.0
 
                     cardsList.add(
                         SensorCard(
