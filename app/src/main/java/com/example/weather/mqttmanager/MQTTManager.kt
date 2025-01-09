@@ -1,84 +1,99 @@
 package com.example.weather.mqttmanager
 
-import android.content.Context
-import org.eclipse.paho.android.service.MqttAndroidClient
-import org.eclipse.paho.client.mqttv3.*
-
+import com.hivemq.client.mqtt.MqttClient
+import com.hivemq.client.mqtt.datatypes.MqttQos
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient
 class MQTTManager(
-    context: Context,
     private val serverUri: String,
     private val clientId: String,
     private val username: String? = null,
     private val password: String? = null
 ) {
 
-    private val mqttClient: MqttAndroidClient = MqttAndroidClient(context, serverUri, clientId)
+    private lateinit var mqttClient: Mqtt3AsyncClient
 
     fun connect(onSuccess: () -> Unit, onFailure: (Throwable) -> Unit) {
         try {
-            val options = MqttConnectOptions().apply {
-                isCleanSession = true
-                username?.let { userName = it }
-                password?.let { this.password = it.toCharArray() }
-            }
+            mqttClient = MqttClient.builder()
+                .useMqttVersion3() // Usar MQTT v3.1.1
+                .serverHost("10.0.0.146") // Endereço do broker
+                .serverPort(1883) // Porta do broker
+                .buildAsync() // Cliente assíncrono
 
-            mqttClient.connect(options, null, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken?) {
-                    onSuccess()
+            mqttClient.connect()
+                .whenComplete { ack, throwable ->
+                    if (throwable == null) {
+                        println("Conectado ao broker MQTT com sucesso!")
+                        onSuccess()
+                    } else {
+                        println("Erro ao conectar ao broker MQTT: ${throwable.message}")
+                        onFailure(throwable)
+                    }
                 }
-
-                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    onFailure(exception ?: Throwable("Erro desconhecido"))
-                }
-            })
         } catch (e: Exception) {
             onFailure(e)
         }
     }
 
-    fun subscribe(topic: String, qos: Int = 1, onMessageReceived: (String) -> Unit) {
+    fun subscribe(topic: String, qos: MqttQos = MqttQos.AT_LEAST_ONCE, onMessageReceived: (String) -> Unit) {
+        if (!::mqttClient.isInitialized) {
+            println("Erro: mqttClient não foi inicializado")
+            return
+        }
+
         try {
-            mqttClient.subscribe(topic, qos, null, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken?) {
-                    println("Inscrito com sucesso em $topic")
+            mqttClient.subscribeWith()
+                .topicFilter(topic) // Nome do tópico
+                .qos(qos) // Qualidade de Serviço
+                .callback { message ->
+                    val payload = message.payloadAsBytes.decodeToString()
+                    println("Mensagem recebida no tópico '$topic': $payload")
+                    onMessageReceived(payload)
                 }
-
-                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    println("Falha ao se inscrever no tópico $topic: ${exception?.message}")
-                }
-            })
-
-            mqttClient.setCallback(object : MqttCallback {
-                override fun connectionLost(cause: Throwable?) {
-                    println("Conexão perdida: ${cause?.message}")
-                }
-
-                override fun messageArrived(topic: String, message: MqttMessage) {
-                    onMessageReceived(message.toString())
-                }
-
-                override fun deliveryComplete(token: IMqttDeliveryToken?) {
-
-                }
-            })
+                .send()
         } catch (e: Exception) {
             println("Erro ao se inscrever: ${e.message}")
         }
     }
 
     fun disconnect(onComplete: () -> Unit) {
-        mqttClient.disconnect(null, object : IMqttActionListener {
-            override fun onSuccess(asyncActionToken: IMqttToken?) {
-                onComplete()
-            }
+        if (!::mqttClient.isInitialized) {
+            println("Erro: mqttClient não foi inicializado")
+            return
+        }
 
-            override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                println("Erro ao desconectar: ${exception?.message}")
+        mqttClient.disconnect()
+            .whenComplete { _, throwable ->
+                if (throwable == null) {
+                    println("Desconectado com sucesso!")
+                    onComplete()
+                } else {
+                    println("Erro ao desconectar: ${throwable.message}")
+                }
             }
-        })
     }
-}
 
-private fun CharArray.toCharArray(): CharArray? {
-    return this?.copyOf()
+    fun setCallback(callback: (topic: String, message: String) -> Unit) {
+        if (!::mqttClient.isInitialized) {
+            println("Erro: mqttClient não foi inicializado")
+            return
+        }
+
+        mqttClient.subscribeWith()
+            .topicFilter("#") // Subscrição em todos os tópicos usando o wildcard "#"
+            .qos(MqttQos.AT_LEAST_ONCE) // Qualidade de Serviço
+            .callback { message ->
+                val topic = message.topic.toString()
+                val payload = message.payloadAsBytes.decodeToString()
+                callback(topic, payload) // Chama o callback com o tópico e a mensagem
+            }
+            .send()
+            .whenComplete { _, throwable ->
+                if (throwable == null) {
+                    println("Callback configurado com sucesso!")
+                } else {
+                    println("Erro ao configurar o callback: ${throwable.message}")
+                }
+            }
+    }
 }

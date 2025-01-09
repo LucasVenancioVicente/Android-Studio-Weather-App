@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -30,11 +31,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -44,13 +45,22 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes.addAll(
+                listOf(
+                    "META-INF/io.netty.versions.properties",
+                    "META-INF/INDEX.LIST",
+                    "META-INF/LICENSE",
+                    "META-INF/LICENSE.txt",
+                    "META-INF/NOTICE",
+                    "META-INF/NOTICE.txt"
+                )
+            )
         }
     }
 }
 
 dependencies {
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation(libs.coil.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -62,6 +72,7 @@ dependencies {
     implementation(libs.androidx.storage)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.play.services.location)
+    implementation(libs.firebase.database.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,14 +81,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
 
-    implementation ("com.google.android.gms:play-services-location:21.0.1") // localização
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // coroutines
-    implementation ("androidx.activity:activity-compose:1.8.2") // compose
+    implementation (libs.play.services.location.v2101) // localização
+    implementation (libs.androidx.lifecycle.runtime.ktx.v270) // coroutines
+    implementation (libs.androidx.activity.compose.v182) // compose
+    implementation (libs.hivemq.mqtt.client)
 
-    implementation ("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5") // mqtt
-    implementation ("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") // mqtt
-    implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+    implementation (libs.androidx.localbroadcastmanager)
+    implementation(libs.firebase.bom)
 
 }
