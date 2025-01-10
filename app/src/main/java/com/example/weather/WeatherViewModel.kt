@@ -20,11 +20,11 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
     private val database = FirebaseDatabase.getInstance()
     private val sensorRef = database.getReference("sensorReadings")
 
-    // Dados do Firebase
+    // dados do Firebase
     private val _cardsFirebaseData = MutableStateFlow<List<SensorCard>>(emptyList())
     val cardsFirebaseData: StateFlow<List<SensorCard>> get() = _cardsFirebaseData
 
-    // Dados do MQTT
+    // dados do MQTT
     private val _cardsMqttData = MutableStateFlow<List<SensorCard>>(emptyList())
     val cardsMqttData: StateFlow<List<SensorCard>> get() = _cardsMqttData
 
@@ -52,10 +52,7 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
                         termicSen = data.optDouble("SensacaoTermica", 0.0)
                     )
 
-                    // Atualizar o estado local
-                    _cardsMqttData.value = _cardsMqttData.value + sensorCard
-
-                    // Gravar no Firebase
+                    _cardsMqttData.value = _cardsMqttData.value + sensorCard // atualizar o estado local
 
                 } catch (e: JSONException) {
                     println("Erro ao processar mensagem MQTT: ${e.message}")
@@ -105,7 +102,6 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
         })
     }
 }
-
 
 class WheatherViewModelFactory(private val mqttManager: MQTTManager) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

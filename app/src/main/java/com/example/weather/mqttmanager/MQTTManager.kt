@@ -3,6 +3,7 @@ package com.example.weather.mqttmanager
 import com.hivemq.client.mqtt.MqttClient
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient
+
 class MQTTManager(
     private val serverUri: String,
     private val clientId: String,
@@ -15,10 +16,10 @@ class MQTTManager(
     fun connect(onSuccess: () -> Unit, onFailure: (Throwable) -> Unit) {
         try {
             mqttClient = MqttClient.builder()
-                .useMqttVersion3() // Usar MQTT v3.1.1
-                .serverHost("10.42.0.118") // Endereço do broker
-                .serverPort(1883) // Porta do broker
-                .buildAsync() // Cliente assíncrono
+                .useMqttVersion3() // versao do mqtt
+                .serverHost("10.42.0.118") // endereco do broker
+                .serverPort(1883) // porta do broker
+                .buildAsync()
 
             mqttClient.connect()
                 .whenComplete { ack, throwable ->
@@ -32,6 +33,7 @@ class MQTTManager(
                 }
         } catch (e: Exception) {
             onFailure(e)
+            SensorData()
         }
     }
 
@@ -43,8 +45,8 @@ class MQTTManager(
 
         try {
             mqttClient.subscribeWith()
-                .topicFilter(topic) // Nome do tópico
-                .qos(qos) // Qualidade de Serviço
+                .topicFilter(topic)
+                .qos(qos)
                 .callback { message ->
                     val payload = message.payloadAsBytes.decodeToString()
                     println("Mensagem recebida no tópico '$topic': $payload")
@@ -80,12 +82,12 @@ class MQTTManager(
         }
 
         mqttClient.subscribeWith()
-            .topicFilter("#") // Subscrição em todos os tópicos usando o wildcard "#"
-            .qos(MqttQos.AT_LEAST_ONCE) // Qualidade de Serviço
+            .topicFilter("#") // subscricao em todos os topicos usando o #
+            .qos(MqttQos.AT_LEAST_ONCE)
             .callback { message ->
                 val topic = message.topic.toString()
                 val payload = message.payloadAsBytes.decodeToString()
-                callback(topic, payload) // Chama o callback com o tópico e a mensagem
+                callback(topic, payload) // callback com o topico e a mensagem
             }
             .send()
             .whenComplete { _, throwable ->
