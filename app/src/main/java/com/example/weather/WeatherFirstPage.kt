@@ -41,6 +41,17 @@ data class SensorCard(
 
 @Composable
 fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
+    val defaultCard = SensorCard(
+        date = "01/01/2025",
+        temperature = 25.0,
+        humidity = 40.0,
+        luminosity = 3200.0,
+        pressure = 1013.0,
+        altitude = 500.0,
+        termicSen = 27.0
+    )
+
+    val dataToShow = if (mqttCards.isNotEmpty()) mqttCards.last() else defaultCard
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,6 +98,7 @@ fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
                 textAlign = TextAlign.Center
             )
         }
+        WeatherDetails(dataToShow)
     }
 }
 
@@ -123,7 +135,6 @@ fun WeatherPage(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
             .verticalScroll(scrollState)
             .clip(RoundedCornerShape(16.dp))
     ) {
@@ -131,15 +142,15 @@ fun WeatherPage(
         if (!isLoading) {
             WeatherHeader(city = city, country = country, mqttCards = mqttCards)
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Text(
             text = "Histórico dos últimos dias",
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
         )
+        Spacer(modifier = Modifier.height(16.dp))
         if (firebaseCards.isEmpty()) {
             Text(
                 text = "Nenhum dado recebido.",
@@ -160,15 +171,26 @@ fun WeatherPage(
 @Composable
 fun WeatherDetails(data: SensorCard) {
     val gradientColor = getGradient(BlueStart, BlueEnd)
+    val condition = determineCondition(data.humidity, data.luminosity)
 
     Column {
         Text(
             text = "${data.temperature}°C",
             fontSize = 56.sp,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth(),
             textAlign = TextAlign.Center
         )
         WeatherImage(data.humidity, data.luminosity)
+        Text(
+            text = condition,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
         Card(
             modifier = Modifier.padding(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -221,6 +243,12 @@ fun WeatherKeyVal(key: String, value: String) {
 fun WeatherImage(humidity: Double, luminosity: Double) {
     val imageResource = determineImageResource(humidity, luminosity)
 
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        contentAlignment = Alignment.Center
+    ) {
         Image(
             painter = painterResource(id = imageResource),
             contentDescription = "Weather Image",
@@ -228,6 +256,7 @@ fun WeatherImage(humidity: Double, luminosity: Double) {
                 .size(160.dp)
                 .scale(2.5f)
         )
+    }
 }
 
 fun determineImageResource(humidity: Double, luminosity: Double): Int {
@@ -237,7 +266,18 @@ fun determineImageResource(humidity: Double, luminosity: Double): Int {
         luminosity in 2000.0..3199.0 && humidity >= 50.0 -> R.drawable.nublado // nublado
         luminosity in 800.0..1999.0 && humidity > 70.0 -> R.drawable.chuvoso // chuvoso
         luminosity < 800.0 -> R.drawable.noite // noite
-        else -> R.drawable.nublado // nublado
+        else -> R.drawable.ensolarado
+    }
+}
+
+fun determineCondition(humidity: Double, luminosity: Double): String {
+    return when {
+        luminosity >= 3200.0 && humidity < 50.0 -> "Ensolarado"
+        luminosity >= 3200.0 && humidity >= 50.0 -> "Sol com nuvens"
+        luminosity in 2000.0..3199.0 && humidity >= 50.0 -> "Nublado"
+        luminosity in 800.0..1999.0 && humidity > 70.0 -> "Chuvoso"
+        luminosity < 800.0 -> "Noite"
+        else -> "Condition not found"
     }
 }
 

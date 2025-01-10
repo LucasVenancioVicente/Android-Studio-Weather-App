@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.play.services.location)
     implementation(libs.firebase.database.ktx)
+    implementation(libs.accompanist.systemuicontroller)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,10 +84,10 @@ dependencies {
 
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
 
-    implementation (libs.play.services.location.v2101) // localização
+    implementation (libs.play.services.location.v2101) // localizacao
     implementation (libs.androidx.lifecycle.runtime.ktx.v270) // coroutines
     implementation (libs.androidx.activity.compose.v182) // compose
-    implementation (libs.hivemq.mqtt.client)
+    implementation (libs.hivemq.mqtt.client) // mqtt
 
     implementation (libs.androidx.localbroadcastmanager)
     implementation(libs.firebase.bom)

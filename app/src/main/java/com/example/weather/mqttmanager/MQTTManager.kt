@@ -33,7 +33,6 @@ class MQTTManager(
                 }
         } catch (e: Exception) {
             onFailure(e)
-            SensorData()
         }
     }
 

@@ -103,7 +103,7 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
     }
 }
 
-class WheatherViewModelFactory(private val mqttManager: MQTTManager) : ViewModelProvider.Factory {
+class WeatherViewModelFactory(private val mqttManager: MQTTManager) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WheatherViewModel::class.java)) {
             return WheatherViewModel(mqttManager) as T
@@ -111,4 +111,6 @@ class WheatherViewModelFactory(private val mqttManager: MQTTManager) : ViewModel
         throw IllegalArgumentException("Classe ViewModel desconhecida")
     }
 }
+
+
 
