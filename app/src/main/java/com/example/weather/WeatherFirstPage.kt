@@ -160,7 +160,8 @@ fun WeatherPage(
             )
         } else {
             LazyRow {
-                items(firebaseCards) { card ->
+                val selectedCards = getSelectedCards(firebaseCards)
+                items(selectedCards) { card ->
                     CardItem(card = card)
                 }
             }
@@ -290,13 +291,14 @@ fun getGradient(
     )
 }
 
-@Composable
-fun CardsSection(cards: List<SensorCard>) {
-    LazyRow {
-        items(cards.size) { index ->
-            CardItem(card = cards[index])
-        }
-    }
+fun getSelectedCards(cards: List<SensorCard>): List<SensorCard> {
+    if (cards.isEmpty()) return emptyList()
+    val first = cards.first()
+    val last = cards.last()
+    val middleIndex1 = cards.size / 3
+    val middleIndex2 = 2 * cards.size / 3
+
+    return listOf(first, cards[middleIndex1], cards[middleIndex2], last)
 }
 
 @Composable
