@@ -23,21 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.example.weather.data.SensorCard
 import com.example.weather.location.LocationProvider
 import com.example.weather.location.reverseGeocode
 import com.example.weather.ui.theme.BlueEnd
 import com.example.weather.ui.theme.BlueStart
 
-
-data class SensorCard(
-    val date: String ,
-    val temperature: Double ,
-    val humidity: Double ,
-    val luminosity: Double ,
-    val pressure: Double ,
-    val altitude: Double ,
-    val termicSen: Double
-)
 
 @Composable // exibe a parte de cima do app, recebendo a cidade, pais e a lista de  dados do sensor
 fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {

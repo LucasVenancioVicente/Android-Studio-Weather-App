@@ -2,6 +2,7 @@ package com.example.weather
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.weather.data.SensorCard
 import com.example.weather.mqttmanager.MQTTManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
