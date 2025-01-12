@@ -16,7 +16,7 @@ import java.util.Date
 import java.util.Locale
 
 
-class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
+class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() { // ViewModel para gerenciar os dados
     private val database = FirebaseDatabase.getInstance()
     private val sensorRef = database.getReference("sensorReadings")
 
@@ -31,12 +31,12 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
     private val _mqttData = MutableStateFlow<SensorCard?>(null)
     val mqttData: StateFlow<SensorCard?> get() = _mqttData
 
-    init {
+    init { // inicializacao do ViewModel
         fetchFirebaseSensorData()
         setupMqttListener()
     }
 
-    fun setupMqttListener() {
+    fun setupMqttListener() { // listener para receber as mensagens mqtt
         try {
             mqttManager.setCallback { topic, message ->
                 try {
@@ -63,12 +63,12 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
         }
     }
 
-    private fun getCurrentDateTime(): String {
+    private fun getCurrentDateTime(): String { // obtem a data e hora atual formatada
         val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
         return formatter.format(Date())
     }
 
-    private fun fetchFirebaseSensorData() {
+    private fun fetchFirebaseSensorData() { // busca os dados do Firebase
         sensorRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cardsList = mutableListOf<SensorCard>()
@@ -103,7 +103,7 @@ class WheatherViewModel(private val mqttManager: MQTTManager) : ViewModel() {
     }
 }
 
-class WeatherViewModelFactory(private val mqttManager: MQTTManager) : ViewModelProvider.Factory {
+class WeatherViewModelFactory(private val mqttManager: MQTTManager) : ViewModelProvider.Factory { // cria instancias do WheatherViewModel que dependem do MQTTManager
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WheatherViewModel::class.java)) {
             return WheatherViewModel(mqttManager) as T

@@ -82,14 +82,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx) // ViewModel
 
     implementation (libs.play.services.location.v2101) // localizacao
     implementation (libs.androidx.lifecycle.runtime.ktx.v270) // coroutines
     implementation (libs.androidx.activity.compose.v182) // compose
     implementation (libs.hivemq.mqtt.client) // mqtt
 
-    implementation (libs.androidx.localbroadcastmanager)
-    implementation(libs.firebase.bom)
+    implementation (libs.androidx.localbroadcastmanager) // intents
+    implementation(libs.firebase.bom) // Firebase
 
 }

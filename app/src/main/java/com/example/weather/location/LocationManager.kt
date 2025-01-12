@@ -14,19 +14,19 @@ import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-class LocationProvider(private val activity: Activity) {
+class LocationProvider(private val activity: Activity) { // classe para obter a localizacao do dispositivo
 
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
 
-    fun hasLocationPermission(): Boolean {
+    fun hasLocationPermission(): Boolean { // verifica se possui a permissao de acesso a localizacao
         return ActivityCompat.checkSelfPermission(
             activity,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestLocationPermission() {
+    fun requestLocationPermission() { // solicita a permissao de acesso a localizacao
         ActivityCompat.requestPermissions(
             activity,
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -35,7 +35,7 @@ class LocationProvider(private val activity: Activity) {
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun getLastLocation(): Pair<Double, Double>? {
+    suspend fun getLastLocation(): Pair<Double, Double>? { // tenta obter a ultima localizacao do dispositivo
         if (!hasLocationPermission()) {
             return null
         }
@@ -58,7 +58,7 @@ class LocationProvider(private val activity: Activity) {
     }
 }
 
-suspend fun reverseGeocode(latitude: Double, longitude: Double): Pair<String, String> {
+suspend fun reverseGeocode(latitude: Double, longitude: Double): Pair<String, String> { // converte coordenadas de latitude e longitude em cidade e pais
     val apiKey = "e99618e77b5f17961360789172c5c173"
     val url = "https://api.openweathermap.org/geo/1.0/reverse?lat=$latitude&lon=$longitude&limit=1&appid=$apiKey"
 

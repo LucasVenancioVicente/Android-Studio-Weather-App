@@ -4,7 +4,7 @@ import com.hivemq.client.mqtt.MqttClient
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient
 
-class MQTTManager(
+class MQTTManager( // construtor com os parametros para a conexao mqtt
     private val serverUri: String,
     private val clientId: String,
     private val username: String? = null,
@@ -13,7 +13,7 @@ class MQTTManager(
 
     private lateinit var mqttClient: Mqtt3AsyncClient
 
-    fun connect(onSuccess: () -> Unit, onFailure: (Throwable) -> Unit) {
+    fun connect(onSuccess: () -> Unit, onFailure: (Throwable) -> Unit) { // conexao com o mqtt
         try {
             mqttClient = MqttClient.builder()
                 .useMqttVersion3() // versao do mqtt
@@ -36,7 +36,7 @@ class MQTTManager(
         }
     }
 
-    fun subscribe(topic: String, qos: MqttQos = MqttQos.AT_LEAST_ONCE, onMessageReceived: (String) -> Unit) {
+    fun subscribe(topic: String, qos: MqttQos = MqttQos.AT_LEAST_ONCE, onMessageReceived: (String) -> Unit) { // inscricao em um topico do mqtt
         if (!::mqttClient.isInitialized) {
             println("Erro: mqttClient não foi inicializado")
             return
@@ -57,7 +57,7 @@ class MQTTManager(
         }
     }
 
-    fun disconnect(onComplete: () -> Unit) {
+    fun disconnect(onComplete: () -> Unit) { // desconecta do mqtt
         if (!::mqttClient.isInitialized) {
             println("Erro: mqttClient não foi inicializado")
             return
@@ -74,7 +74,7 @@ class MQTTManager(
             }
     }
 
-    fun setCallback(callback: (topic: String, message: String) -> Unit) {
+    fun setCallback(callback: (topic: String, message: String) -> Unit) { // configura um callback generico para receber mensagens em qualquer topico
         if (!::mqttClient.isInitialized) {
             println("Erro: mqttClient não foi inicializado")
             return

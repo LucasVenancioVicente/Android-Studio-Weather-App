@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val locationProvider = LocationProvider(this)
+        val locationProvider = LocationProvider(this) // obter a localizacao
 
         val mqttManager = MQTTManager( // credenciais do mqtt
             serverUri = "tcp://10.0.0.146:1883",
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
             password = null        )
 
         val weatherViewModel: WheatherViewModel by viewModels {
-            WeatherViewModelFactory(mqttManager)
+            WeatherViewModelFactory(mqttManager) // injeta o gerenciador mqtt na viewmodel
         }
 
         mqttManager.connect( // conectar ao broker
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-    @Composable
+    @Composable // definir a cor da status bar
     private fun SetBarColor(color: androidx.compose.ui.graphics.Color) {
         val systemUiController = rememberSystemUiController()
         SideEffect {

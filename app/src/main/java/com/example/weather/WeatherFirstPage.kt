@@ -39,7 +39,7 @@ data class SensorCard(
     val termicSen: Double
 )
 
-@Composable
+@Composable // exibe a parte de cima do app, recebendo a cidade, pais e a lista de  dados do sensor
 fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
     val defaultCard = SensorCard(
         date = "01/01/2025",
@@ -88,7 +88,7 @@ fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
         Spacer(modifier = Modifier.height(16.dp))
 
         if (mqttCards.isNotEmpty()) {
-            val latestData = mqttCards.last() // dado mais recente
+            val latestData = mqttCards.last() // pega o dado mais recente
             WeatherDetails(latestData)
         } else {
             Text(
@@ -102,7 +102,7 @@ fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
     }
 }
 
-@Composable
+@Composable // exibe a parte de carregamento de localizacao e as cards do firebase, recebendo como parametro o locationProvider e viewModel
 fun WeatherPage(
     locationProvider: LocationProvider,
     viewModel: WheatherViewModel
@@ -169,7 +169,7 @@ fun WeatherPage(
     }
 }
 
-@Composable
+@Composable // exibe os dados do mqtt, recebendo o SensorCard como parametro
 fun WeatherDetails(data: SensorCard) {
     val gradientColor = getGradient(BlueStart, BlueEnd)
     val condition = determineCondition(data.humidity, data.luminosity)
@@ -229,7 +229,7 @@ fun WeatherDetails(data: SensorCard) {
     }
 }
 
-@Composable
+@Composable // recebe uma chave (Altitude) e um valor (80 hPa) como entrada e os exibe formatados, deixando o codigo mais organizado
 fun WeatherKeyVal(key: String, value: String) {
     Column(
         modifier = Modifier.padding(16.dp),
@@ -240,7 +240,7 @@ fun WeatherKeyVal(key: String, value: String) {
     }
 }
 
-@Composable
+@Composable // exibe a imagem com base na umidade e luminosidade que eh passada
 fun WeatherImage(humidity: Double, luminosity: Double) {
     val imageResource = determineImageResource(humidity, luminosity)
 
@@ -260,7 +260,7 @@ fun WeatherImage(humidity: Double, luminosity: Double) {
     }
 }
 
-fun determineImageResource(humidity: Double, luminosity: Double): Int {
+fun determineImageResource(humidity: Double, luminosity: Double): Int { // logica para comparar os dados de luminosity e humidity, e entao retornar a imagem adequada
     return when {
         luminosity >= 3200.0 && humidity < 50.0 -> R.drawable.ensolarado // sol
         luminosity >= 3200.0 && humidity >= 50.0 -> R.drawable.sol_com_nuvens // sol com nuvens
@@ -271,7 +271,7 @@ fun determineImageResource(humidity: Double, luminosity: Double): Int {
     }
 }
 
-fun determineCondition(humidity: Double, luminosity: Double): String {
+fun determineCondition(humidity: Double, luminosity: Double): String { // logica para comparar os dados de luminosity e humidity, e entao retornar a condition
     return when {
         luminosity >= 3200.0 && humidity < 50.0 -> "Ensolarado"
         luminosity >= 3200.0 && humidity >= 50.0 -> "Sol com nuvens"
@@ -282,7 +282,7 @@ fun determineCondition(humidity: Double, luminosity: Double): String {
     }
 }
 
-fun getGradient(
+fun getGradient( // funcao para fazer um gradiente de cor, para ser usado nos cards
     startColor: Color,
     endColor: Color,
 ): Brush {
@@ -291,7 +291,7 @@ fun getGradient(
     )
 }
 
-fun getSelectedCards(cards: List<SensorCard>): List<SensorCard> {
+fun getSelectedCards(cards: List<SensorCard>): List<SensorCard> { // funcao para filtrar os cards que serao exibidos, pegando o primeiro (dado mais antigo), o ultimo (dado mais recente, e os dois do meio
     if (cards.isEmpty()) return emptyList()
     val first = cards.first()
     val last = cards.last()
@@ -301,7 +301,7 @@ fun getSelectedCards(cards: List<SensorCard>): List<SensorCard> {
     return listOf(first, cards[middleIndex1], cards[middleIndex2], last)
 }
 
-@Composable
+@Composable // exibir os cards
 fun CardItem(card: SensorCard) {
     Box(
         modifier = Modifier
