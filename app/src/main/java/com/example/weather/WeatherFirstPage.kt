@@ -41,8 +41,9 @@ fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
         altitude = 500.0,
         termicSen = 27.0
     )
+    // Decide qual card será exibido
+    val selectedCard = if (mqttCards.isNotEmpty()) mqttCards.last() else defaultCard
 
-    val dataToShow = if (mqttCards.isNotEmpty()) mqttCards.last() else defaultCard
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -89,7 +90,7 @@ fun WeatherHeader(city: String, country: String, mqttCards: List<SensorCard>) {
                 textAlign = TextAlign.Center
             )
         }
-        WeatherDetails(dataToShow)
+        WeatherDetails(selectedCard)
     }
 }
 

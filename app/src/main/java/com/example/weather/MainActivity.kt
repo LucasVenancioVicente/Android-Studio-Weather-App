@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         val locationProvider = LocationProvider(this) // obter a localizacao
 
         val mqttManager = MQTTManager( // credenciais do mqtt
-            serverUri = "tcp://10.0.0.146:1883",
+            serverUri = "tcp://192.168.15.5:1883",
             clientId = "AndroidClient_${System.currentTimeMillis()}",
             username = null,
             password = null        )

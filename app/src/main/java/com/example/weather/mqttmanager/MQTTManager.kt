@@ -17,7 +17,7 @@ class MQTTManager( // construtor com os parametros para a conexao mqtt
         try {
             mqttClient = MqttClient.builder()
                 .useMqttVersion3() // versao do mqtt
-                .serverHost("10.42.0.118") // endereco do broker
+                .serverHost("192.168.15.5") // endereco do broker
                 .serverPort(1883) // porta do broker
                 .buildAsync()
 
